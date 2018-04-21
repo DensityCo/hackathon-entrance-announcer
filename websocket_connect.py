@@ -1,4 +1,6 @@
 from websocket import create_connection
+
+import random
 import json
 import os
 import requests
@@ -19,16 +21,22 @@ api_socket_response = requests.post(
 ).json()
 websocket_url = api_socket_response['url']
 
+sound_options = ["Basso", "Blow", "Bottle", "Frog", "Funk", "Glass", "Hero", "Morse", "Ping", "Pop", "Purr", "Sosumi", "Submarine", "Tink"]
+
 ws = create_connection("{0}".format(websocket_url))
 print "Receiving..."
 
 while True:
     result =  json.loads(ws.recv())
     space = result['payload']['space_id']
-    if space == 'spc_17152113268228380':
+    if space == 'spc_31879203125199140':
         if result['payload']['direction'] == 1:
-            print "entered phone booth"
-            subprocess.call(["afplay", "/System/Library/Sounds/Hero.aiff"])
+            print "entered office"
+            sound = random.choice(sound_options)
+            print sound
+            subprocess.call(["afplay", "/System/Library/Sounds/{0}.aiff".format(sound)])
         if result['payload']['direction'] == -1:
-            print "exited phone booth"
-            subprocess.call(["afplay", "/System/Library/Sounds/Submarine.aiff"])
+            print "exited office"
+            sound = random.choice(sound_options)
+            print sound
+            subprocess.call(["afplay", "/System/Library/Sounds/{0}.aiff".format(sound)])
