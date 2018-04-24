@@ -15,29 +15,30 @@ api_headers = {
     'Authorization': 'Bearer {}'.format(api_token),
 }
 
-api_socket_response = requests.post(
-    'https://api.density.io/v2/sockets/',
-    headers=api_headers
-).json()
-print api_socket_response
-websocket_url = api_socket_response['url']
+def connect_to_websocket():
+    api_socket_response = requests.post(
+        'https://api.density.io/v2/sockets/',
+        headers=api_headers
+    ).json()
+    websocket_url = api_socket_response['url']
 
-sound_options = ["Basso", "Blow", "Bottle", "Frog", "Funk", "Glass", "Hero", "Morse", "Ping", "Pop", "Purr", "Sosumi", "Submarine", "Tink"]
+    ws = create_connection("{0}".format(websocket_url))
+    print "Receiving..."
 
-ws = create_connection("{0}".format(websocket_url))
-print "Receiving..."
+sound_options = [ "steve_laugh"]
+
+connect_to_websocket()
 
 while True:
-    result =  json.loads(ws.recv())
-    space = result['payload']['space_id']
-    if space == 'spc_31879203125199140':
-        if result['payload']['direction'] == 1:
-            print "entered office"
-            sound = random.choice(sound_options)
-            print sound
-            subprocess.call(["play", "/home/pi/hackathon-entrance-announcer/sounds/{0}.aiff".format(sound)])
-     #   if result['payload']['direction'] == -1:
-     #       print "exited office"
-     #       sound = random.choice(sound_options)
-     #       print sound
-     #       subprocess.call(["play", "/home/pi/hackathon-entrance-announcer/sounds/{0}.aiff".format(sound)])
+    try:
+        result =  json.loads(ws.recv())
+        space = result['payload']['space_id']
+        if space == 'spc_31879203125199140':
+            if result['payload']['direction'] == 1:
+                print "entered office"
+                sound = random.choice(sound_options)
+                print sound
+                subprocess.call(["play", "/home/pi/hackathon-entrance-announcer/sounds/{0}.aif".format(sound)])
+    except KeyboardInterrupt:
+        subprocess.call(["espeak", '"websocket closed, reconnecting" 2>/dev/null'])
+        connect_to_websocket()
