@@ -1,18 +1,21 @@
 from websocket import create_connection
+import requests
 
 import random
 import json
 import os
-import requests
 import subprocess
 
 api_token = os.environ.get('WEBSOCKET_TOKEN', None)
 if api_token is None:
     raise Exception("Please set the 'WEBSOCKET_TOKEN' environment variable")
 
-sound_directory = os.environ.get('SOUND_DIRECTORY', None)
-if api_token is None:
-    raise Exception("Please set the 'SOUND_DIRECTORY' environment variable")
+space_id = os.environ.get('SPACE_ID', None)
+if space_id is None:
+    raise Exception("Please set the 'SPACE_ID' environment variable")
+
+current_directory = os.path.dirname(os.path.realpath(__file__))
+sound_directory = os.path.join(current_directory, 'sounds')
 
 api_headers = {
     'Content-Type': 'application/json',
@@ -37,19 +40,14 @@ while True:
         result = json.loads(ws.recv())
         space = result['payload']['space_id']
         print result
-        if space == 'spc_31879203125199140':
+        if space == space_id:
             if result['payload']['direction'] == 1:
                 print "entered office"
                 sound = random.choice(sound_options)
-                print sound
-                # subprocess.call(["afplay", "{0}/{1}.aif".format(sound_directory, sound)])   # mac
-                subprocess.call(["play", "{0}/{1}.aif".format(sound_directory, sound)])   # Pi
+                subprocess.call(["afplay", "{0}/{1}.aif".format(sound_directory, sound)])   # mac
 
     except Exception as e:
         print "{0}".format(e)
-        # subprocess.call(["say", "websocket closed, reconnecting"])   # Pi
-        # subprocess.call(["espeak", '"websocket closed, reconnecting" 2>/dev/null'])   # Pi
-        # get new websocket_url
         websocket_url = new_websocket_url()
         ws = create_connection("{0}".format(websocket_url))
         print "reconnecting"
