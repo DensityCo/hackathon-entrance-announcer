@@ -5,7 +5,7 @@ $ pip --version
 If response is `-bash: command not found` do following:
   $ easy_install pip
 
-If a version number is returned, just perform these two commands:
+Then:
 $ pip install websocket-client==0.47.0
 $ pip install requests==2.13.0
 
