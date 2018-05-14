@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "websocket_connect.py", line 11, in <module>
+    raise Exception("Please set the 'WEBSOCKET_TOKEN' environment variable")
+Exception: Please set the 'WEBSOCKET_TOKEN' environment variable
+Traceback (most recent call last):
+  File "websocket_connect.py", line 11, in <module>
+    raise Exception("Please set the 'WEBSOCKET_TOKEN' environment variable")
+Exception: Please set the 'WEBSOCKET_TOKEN' environment variable
